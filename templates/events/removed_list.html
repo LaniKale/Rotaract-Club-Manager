@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Removed events{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Removed events</h1>
+<ul class="list-group">
+  {% for r in removed %}<li class="list-group-item">{{ r.event }} · removed {{ r.removal_date|date:"d/m/Y" }} by {{ r.removed_by }}</li>
+  {% empty %}<li class="list-group-item text-muted">No removed events.</li>{% endfor %}
+</ul>
+{% endblock %}
