@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Removed members{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Removed members</h1>
+<div class="table-responsive bg-white rounded">
+<table class="table mb-0">
+  <thead><tr><th>Name</th><th>Email</th><th>Removed on</th><th>Removed by</th><th></th></tr></thead>
+  <tbody>
+  {% for r in removed %}
+    <tr>
+      <td><a href="{% url 'members:detail' r.member.pk %}">{{ r.member }}</a></td><td>{{ r.member.email }}</td>
+      <td>{{ r.removal_date|date:"d/m/Y" }}</td><td>{{ r.removed_by }}</td>
+      <td>{% if perms.members.delete_clubmember %}
+        <form method="post" action="{% url 'members:restore' r.member.pk %}">{% csrf_token %}<button class="btn btn-outline-success btn-sm">Restore</button></form>
+      {% endif %}</td>
+    </tr>
+  {% empty %}<tr><td colspan="5" class="text-muted text-center">No removed members.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+<a class="d-inline-block mt-3" href="{% url 'members:list' %}">← Back to member records</a>
+{% endblock %}
