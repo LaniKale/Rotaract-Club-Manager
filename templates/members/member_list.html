@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Members{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h1 class="h3 mb-0">Member records</h1>
+  <div>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'members:removed' %}">Removed members</a>
+    {% if perms.members.add_clubmember %}<a class="btn btn-primary btn-sm" href="{% url 'members:add' %}">+ Add member</a>{% endif %}
+  </div>
+</div>
+<form method="get" class="row g-2 mb-3 rc-form">
+  <div class="col-6 col-md-3">{{ form.first_name.label_tag }} {{ form.first_name }}</div>
+  <div class="col-6 col-md-3">{{ form.surname.label_tag }} {{ form.surname }}</div>
+  <div class="col-6 col-md-3">{{ form.faculty.label_tag }} {{ form.faculty }}</div>
+  <div class="col-6 col-md-2">{{ form.status.label_tag }} {{ form.status }}</div>
+  <div class="col-12 col-md-1 d-flex align-items-end"><button class="btn btn-primary w-100">Search</button></div>
+</form>
+<div class="table-responsive bg-white rounded">
+<table class="table table-hover mb-0">
+  <thead><tr><th>Surname</th><th>First name</th><th>Faculty</th><th>Email</th><th>Status</th><th>Role</th></tr></thead>
+  <tbody>
+  {% for m in members %}
+    <tr class="rc-row-link" data-href="{% url 'members:detail' m.pk %}">
+      <td><a class="text-reset text-decoration-none" href="{% url 'members:detail' m.pk %}">{{ m.surname }}</a></td>
+      <td>{{ m.first_name }}</td><td>{{ m.faculty }}</td><td>{{ m.email }}</td>
+      <td><span class="badge {% if m.membership_status == 'Member' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ m.get_membership_status_display }}</span></td>
+      <td>{{ m.role }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="text-muted text-center">No members found.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="text-muted small mt-2">{{ members|length }} member(s)</p>
+{% endblock %}
