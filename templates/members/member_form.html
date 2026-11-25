@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 640px"><div class="card-body">
+  <h1 class="h4 mb-3">{{ title }}</h1>
+  {% if application %}
+    <div class="alert alert-info small">Filled in from the application sent on {{ application.submitted_at|date:"d/m/Y" }}{% if application.meeting %} at {{ application.meeting.title }}{% endif %}. Check the details, then save to add them as a member and create their login.</div>
+  {% endif %}
+  {% if duplicates %}
+    <div class="alert alert-warning">
+      Possible duplicate:
+      <ul class="mb-0">{% for d in duplicates %}<li><a href="{% url 'members:detail' d.pk %}">{{ d.full_name }}</a> ({{ d.email }})</li>{% endfor %}</ul>
+    </div>
+  {% endif %}
+  <form method="post" class="rc-form" novalidate>{% csrf_token %}
+    {% include 'form_fields.html' %}
+    {% if duplicates %}
+      <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="confirm_duplicate" id="dup" value="1">
+      <label class="form-check-label" for="dup">Save anyway</label></div>
+    {% endif %}
+    <button class="btn btn-primary">Save</button>
+    <input type="hidden" name="next" value="{{ cancel_url }}">
+    {% if application %}<input type="hidden" name="application" value="{{ application.pk }}">{% endif %}
+    <a class="btn btn-secondary" href="{{ cancel_url }}">Cancel</a>
+  </form>
+</div></div>
+{% endblock %}
