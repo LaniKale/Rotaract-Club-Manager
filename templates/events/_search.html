@@ -1,0 +1,16 @@
+{# Event search bar, used on the Events list and the Delete events page. #}
+<form method="get" class="row g-2 align-items-end mb-3" role="search">
+  {% if keep_view %}<input type="hidden" name="view" value="list">{% endif %}
+  <div class="col-12 col-md">
+    <label class="form-label small mb-1" for="id_q">{{ search.q.label }}</label>
+    {{ search.q.as_widget }}
+  </div>
+  <div class="col-8 col-md-3">
+    <label class="form-label small mb-1" for="id_date">{{ search.date.label }}</label>
+    {{ search.date.as_widget }}
+  </div>
+  <div class="col-4 col-md-auto d-flex gap-2">
+    <button class="btn btn-primary">Search</button>
+    {% if searching %}<a class="btn btn-outline-secondary" href="?{% if keep_view %}view=list{% endif %}">Clear</a>{% endif %}
+  </div>
+</form>
