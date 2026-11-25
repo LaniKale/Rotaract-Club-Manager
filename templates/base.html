@@ -1,0 +1,92 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Rotaract CMS{% endblock %} | Rotaract UWI Mona</title>
+  <link rel="icon" href="{% static 'brand/favicon.ico' %}" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'brand/favicon-32.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'brand/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'brand/site.webmanifest' %}">
+  <meta name="theme-color" content="#C01E5A">
+  <link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/flatpickr/flatpickr.min.css' %}" rel="stylesheet">
+  <style>
+    :root { --rc-cranberry: #C01E5A; --rc-cranberry-dark: #9F184A; }  /* the club logo's colour */
+    .navbar { background: var(--rc-cranberry); }
+    .btn-primary { background: var(--rc-cranberry); border-color: var(--rc-cranberry); }
+    .btn-primary:hover { background: var(--rc-cranberry-dark); border-color: var(--rc-cranberry-dark); }
+    .rc-brand img { height: 46px; width: auto; display: block; }
+    .navbar-dark .navbar-nav .nav-link { color: rgba(255, 255, 255, .85); }  /* readable on the logo colour */
+    .navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link:focus { color: #fff; }
+    .rc-logo { display: block; width: 100%; height: auto; margin: 0 auto 1.25rem; }
+    a { color: var(--rc-cranberry); }
+    .rc-form input:not([type=checkbox]), .rc-form select, .rc-form textarea {
+      display: block; width: 100%; padding: .375rem .75rem; border: 1px solid #ced4da;
+      border-radius: .375rem; margin-bottom: .25rem; }
+    .rc-form .errorlist { list-style: none; padding: 0; color: #b02a37; font-size: .875rem; }
+    .rc-form .helptext { color: #6c757d; font-size: .8rem; }
+    .rc-row-link { cursor: pointer; }
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand rc-brand py-1" href="{% url 'dashboard' %}"><img src="{% static 'brand/rotaract-logo-white.svg' %}" alt="Rotaract UWI Mona"></a>
+    {% if user.is_authenticated %}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'events:list' %}">Events</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'attendance:mine' %}">My attendance</a></li>
+        {% if perms.members.view_clubmember %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'members:list' %}">Members</a></li>
+        {% endif %}
+        {% if perms.members.add_clubmember %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'members:applications' %}">Applications{% if pending_applications %} <span class="badge rounded-pill text-bg-light">{{ pending_applications }}</span>{% endif %}</a></li>
+        {% endif %}
+        {% if perms.attendance.view_meeting %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'attendance:meetings' %}">Meetings</a></li>
+        {% endif %}
+        {% if perms.auth.change_group %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'roles:list' %}">Roles</a></li>
+        {% endif %}
+      </ul>
+      <a class="navbar-text text-white me-3 text-decoration-none" href="{% url 'set_password' %}" title="Change password">{% if user.club_member %}{{ user.club_member.full_name }}{% else %}{{ user.get_username }}{% endif %}{% if user.club_member.role %} · {{ user.club_member.role }}{% endif %}</a>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+        <button class="btn btn-outline-light btn-sm">Log out</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</nav>
+<main class="container pb-5">
+  {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+      {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/flatpickr/flatpickr.min.js' %}"></script>
+<script>
+  // Date boxes show and accept dd/mm/yyyy on every device (the browser's own date
+  // picker follows the device's region instead). The server still receives yyyy-mm-dd.
+  document.querySelectorAll('input.rc-date').forEach(function (input) {
+    flatpickr(input, { dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y',
+                       allowInput: true, disableMobile: true });
+  });
+</script>
+<script>
+  // Clicking anywhere on a row marked rc-row-link opens that record.
+  document.querySelectorAll('.rc-row-link').forEach(function (row) {
+    row.addEventListener('click', function (e) {
+      if (!e.target.closest('a, button, input, form')) window.location = row.dataset.href;
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Welcome{% if user.club_member %}, {{ user.club_member.first_name }}{% endif %}</h1>
+<div class="row g-3">
+  {% if perms.members.view_clubmember %}
+  <div class="col-md-4"><div class="card h-100"><div class="card-body">
+    <h2 class="h5">Members</h2><p class="text-muted">Add, search, edit and remove member records.</p>
+    <a class="btn btn-primary btn-sm" href="{% url 'members:list' %}">Member records</a>
+    {% if perms.members.add_clubmember %}<a class="btn btn-outline-secondary btn-sm" href="{% url 'members:add' %}">Add member</a>{% endif %}
+  </div></div></div>
+  {% endif %}
+  {% if perms.attendance.view_meeting %}
+  <div class="col-md-4"><div class="card h-100"><div class="card-body">
+    <h2 class="h5">Meetings</h2><p class="text-muted">Start attendance and show the QR code.</p>
+    <a class="btn btn-primary btn-sm" href="{% url 'attendance:meetings' %}">Meetings</a>
+  </div></div></div>
+  {% endif %}
+  {% if perms.events.add_event %}
+  <div class="col-md-4"><div class="card h-100"><div class="card-body">
+    <h2 class="h5">Events</h2><p class="text-muted">Add upcoming events or delete old ones.</p>
+    <a class="btn btn-primary btn-sm" href="{% url 'events:add' %}">Add event</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'events:delete' %}">Delete events</a>
+  </div></div></div>
+  {% endif %}
+</div>
+<h2 class="h5 mt-4">Upcoming events</h2>
+<ul class="list-group">
+  {% for event in upcoming_events %}
+    <li class="list-group-item"><strong>{{ event.title }}</strong> · {{ event.date|date:"d/m/Y" }} at {{ event.start_time|time:"g:i A" }} · {{ event.location }}</li>
+  {% empty %}
+    <li class="list-group-item text-muted">No upcoming events.</li>
+  {% endfor %}
+</ul>
+<a class="d-inline-block mt-2" href="{% url 'events:list' %}">See all events</a>
+{% endblock %}

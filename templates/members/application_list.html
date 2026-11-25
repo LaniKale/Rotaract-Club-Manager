@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Membership applications{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Membership applications</h1>
+<p class="text-muted">People who applied from the Join page. <strong>Review and accept</strong> opens the Add member form filled in with their details; saving it adds them and creates their login.</p>
+<h2 class="h5">Waiting for review ({{ pending|length }})</h2>
+<div class="table-responsive bg-white rounded mb-4">
+<table class="table mb-0 align-middle">
+  <thead><tr><th>Name</th><th>Faculty</th><th>Email</th><th>Phone</th><th>Sent</th><th></th></tr></thead>
+  <tbody>
+  {% for a in pending %}
+    <tr>
+      <td class="fw-semibold">{{ a.surname }}, {{ a.first_name }}</td><td>{{ a.faculty }}</td><td>{{ a.email }}</td>
+      <td>{{ a.phone_number|default:"—" }}</td>
+      <td class="small">{{ a.submitted_at|date:"d/m/Y g:i A" }}{% if a.meeting %}<br><span class="text-muted">at {{ a.meeting.title }}</span>{% endif %}</td>
+      <td class="text-nowrap text-end">
+        <a class="btn btn-primary btn-sm" href="{% url 'members:add' %}?application={{ a.pk }}">Review and accept</a>
+        <a class="btn btn-outline-danger btn-sm" href="{% url 'members:application_reject' a.pk %}">Reject</a>
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="6" class="text-muted text-center">No applications waiting.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% if reviewed %}
+<h2 class="h6">Recently reviewed</h2>
+<ul class="list-group small">
+  {% for a in reviewed %}<li class="list-group-item">{{ a.reviewed_at|date:"d/m/Y g:i A" }} · {{ a.full_name }} · <strong>{{ a.status }}</strong> by {{ a.reviewed_by }}{% if a.member %} · <a href="{% url 'members:detail' a.member.pk %}">member record</a>{% endif %}</li>{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

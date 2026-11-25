@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Application sent{% endblock %}
+{% block content %}
+{% load static %}
+<div class="card mx-auto text-center" style="max-width: 460px"><div class="card-body py-5">
+  <img class="rc-logo" style="max-width: 220px" src="{% static 'brand/rotaract-logo.svg' %}" alt="Rotaract UWI Mona">
+  <h1 class="h4">Thanks, {{ application.first_name }}!</h1>
+  <p class="text-muted mb-0">Your application has been sent. A club executive will review it, and once you are
+    accepted the Secretary will give you your login.</p>
+</div></div>
+{% endblock %}

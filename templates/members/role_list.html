@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Roles{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h1 class="h3 mb-0">Roles</h1>
+  <a class="btn btn-primary btn-sm" href="{% url 'roles:add' %}">+ New role</a>
+</div>
+<p class="text-muted">Each member has one role. A role decides what its members can do in the system.
+  Assign roles on a member's record.</p>
+<div class="table-responsive bg-white rounded">
+<table class="table mb-0 align-middle">
+  <thead><tr><th>Role</th><th>Members</th><th>Can do</th><th></th></tr></thead>
+  <tbody>
+  {% for r in roles %}
+    <tr>
+      <td class="fw-semibold">{{ r.group.name }}</td>
+      <td>{{ r.members }}</td>
+      <td class="small">{% for c in r.capabilities %}<span class="badge text-bg-light border me-1 mb-1">{{ c }}</span>{% empty %}<span class="text-muted">View events and own attendance only</span>{% endfor %}</td>
+      <td class="text-nowrap text-end">
+        {% if r.locked %}
+          <span class="badge text-bg-secondary" title="This role is locked and cannot be edited or deleted">Locked</span>
+        {% else %}
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'roles:edit' r.group.pk %}">Edit</a>
+        {% endif %}
+        {% if not r.locked and not r.members %}
+          <a class="btn btn-outline-danger btn-sm" href="{% url 'roles:delete' r.group.pk %}">Delete</a>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="small text-muted mt-2">Every member can always log in, view upcoming events, check in at meetings and see their own attendance.</p>
+{% endblock %}

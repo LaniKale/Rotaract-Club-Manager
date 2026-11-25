@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 680px"><div class="card-body">
+  <h1 class="h4 mb-3">{{ title }}</h1>
+  <form method="post" class="rc-form" novalidate>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="mb-3">
+      <label class="form-label fw-semibold" for="{{ form.name.id_for_label }}">Role name *</label>
+      {{ form.name }}
+      {% if form.name.help_text %}<div class="helptext">{{ form.name.help_text }}</div>{% endif %}
+      {{ form.name.errors }}
+    </div>
+    <p class="fw-semibold mb-2">This role can:</p>
+    <div class="list-group mb-3">
+      {% for key, label, help, perms in capabilities %}
+        <label class="list-group-item d-flex gap-2">
+          <input class="form-check-input mt-1" type="checkbox" name="capabilities" value="{{ key }}"
+                 {% if key in form.capabilities.value %}checked{% endif %}>
+          <span><span class="fw-semibold">{{ label }}</span><br><span class="small text-muted">{{ help }}</span></span>
+        </label>
+      {% endfor %}
+    </div>
+    <button class="btn btn-primary">Save role</button>
+    <a class="btn btn-secondary" href="{% url 'roles:list' %}">Cancel</a>
+  </form>
+</div></div>
+{% endblock %}

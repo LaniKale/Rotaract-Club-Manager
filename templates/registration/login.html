@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+{% load static %}
+<div class="card mx-auto" style="max-width: 420px">
+  <div class="card-body">
+    <img class="rc-logo" style="max-width: 260px" src="{% static 'brand/rotaract-logo.svg' %}" alt="Rotaract UWI Mona">
+    {% if '/attendance/checkin/' in next %}
+      <h1 class="h4 mb-3">Log in to check in</h1>
+    {% else %}
+      <h1 class="h4 mb-3">Log in</h1>
+    {% endif %}
+    {% if form.access_restricted %}
+      <div class="alert alert-danger" role="alert">
+        <h2 class="h6 fw-bold mb-2">Account Access Restricted</h2>
+        <p class="mb-2">Unfortunately, your membership with the Rotaract Club of UWI Mona is no longer active, and you can no longer access the members' portal.</p>
+        <p class="mb-0">If you believe this is an error or require further assistance, please contact us.</p>
+      </div>
+    {% elif form.errors %}<div class="alert alert-danger">Incorrect email or password.</div>{% endif %}
+    <form method="post" class="rc-form">{% csrf_token %}
+      <div class="mb-3"><label class="form-label" for="id_username">Email</label>{{ form.username }}</div>
+      <div class="mb-3"><label class="form-label" for="id_password">Password</label>{{ form.password }}</div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-primary w-100">Log in</button>
+    </form>
+    <hr>
+    <p class="small text-muted mb-1">Forgot your password? Ask the Secretary to reset it.</p>
+    {% if '/attendance/checkin/' in next %}
+      <p class="small mb-0">Not a member yet? <a href="{% url 'join' %}?next={{ next|urlencode }}">Apply to join the club</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Join the club{% endblock %}
+{% block content %}
+{% load static %}
+<div class="card mx-auto" style="max-width: 560px"><div class="card-body">
+  <img class="rc-logo" style="max-width: 260px" src="{% static 'brand/rotaract-logo.svg' %}" alt="Rotaract UWI Mona">
+  <h1 class="h4 mb-1">Apply to join Rotaract UWI Mona</h1>
+  <p class="text-muted small">Send your details and a club executive will review your application.
+    Once you are accepted, the Secretary will give you your login.</p>
+  {% if meeting %}<p class="small"><span class="badge text-bg-light border">{{ meeting.title }} · {{ meeting.date|date:"d/m/Y" }}</span></p>{% endif %}
+  <form method="post" class="rc-form" novalidate>{% csrf_token %}
+    {% include 'form_fields.html' %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn btn-primary w-100">Send application</button>
+  </form>
+  {% if next %}<p class="small text-center mt-3 mb-0">Already a member? <a href="{% url 'login' %}?next={{ next|urlencode }}">Log in</a></p>{% endif %}
+</div></div>
+{% endblock %}
