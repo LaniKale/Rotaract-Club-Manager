@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}My attendance{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">My attendance</h1>
+{% if not member %}
+  <div class="alert alert-info">Your login is not linked to a member record yet. Ask the Secretary to link it.</div>
+{% else %}
+  {% include "attendance/_rate.html" %}
+  <ul class="list-group">
+    {% for r in records %}<li class="list-group-item">{{ r.meeting.date|date:"d/m/Y" }} – {{ r.meeting.title }} <span class="text-muted small">({{ r.method }})</span></li>
+    {% empty %}<li class="list-group-item text-muted">No attendance recorded yet.</li>{% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

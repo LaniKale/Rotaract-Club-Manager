@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Check in{% endblock %}
+{% block content %}
+<div class="card mx-auto text-center" style="max-width: 420px"><div class="card-body py-5">
+  <div class="display-4 mb-2">{% if ok %}✅{% else %}⚠️{% endif %}</div>
+  <h1 class="h4">{{ message }}</h1>
+  {% if meeting %}<p class="text-muted">{{ meeting.title }} · {{ meeting.date|date:"d/m/Y" }}</p>{% endif %}
+  {% if register %}<a class="btn btn-primary mt-2" href="{% url 'join' %}">Apply to join the club</a>{% endif %}
+</div></div>
+{% endblock %}

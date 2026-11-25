@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}{{ meeting.title }}{% endblock %}
+{% block content %}
+<h1 class="h3">{{ meeting.title }}</h1>
+<p class="text-muted">{{ meeting.date|date:"l, d/m/Y" }} · {{ meeting.start_time|time:"g:i A" }} · {{ meeting.location }}</p>
+<div class="row g-3">
+  <div class="col-lg-5"><div class="card text-center"><div class="card-body">
+    {% if checkin_url %}
+      <h2 class="h5">Scan to check in</h2>
+      <img src="{% url 'attendance:qr_image' meeting.pk %}" alt="Attendance QR code" class="img-fluid" style="max-width: 320px">
+      <p class="small text-muted mt-2">Valid until {{ qr.expiry_time|date:"g:i A" }}</p>
+      <p class="small"><a href="{{ checkin_url }}" target="_blank">{{ checkin_url }}</a></p>
+      {% if perms.attendance.add_meeting %}
+      <form method="post" action="{% url 'attendance:close' meeting.pk %}">{% csrf_token %}<button class="btn btn-outline-danger">Close attendance</button></form>
+      {% endif %}
+    {% else %}
+      <h2 class="h5">Attendance is not open</h2>
+      <p class="text-muted">Start attendance to show the QR code.</p>
+      {% if perms.attendance.add_meeting %}
+      <form method="post" action="{% url 'attendance:start' meeting.pk %}">{% csrf_token %}<button class="btn btn-primary">Start attendance</button></form>
+      {% endif %}
+    {% endif %}
+  </div></div></div>
+  <div class="col-lg-7">
+    {% if expected %}<p class="mb-2"><strong>{{ records|length }}</strong> present · <strong>{{ absent|length }}</strong> not checked in{% if turnout is not None %} · {{ turnout }}% of members{% endif %}</p>{% endif %}
+    <div class="card mb-3"><div class="card-body">
+    <h2 class="h5">Present ({{ records|length }})</h2>
+    <ul class="list-group list-group-flush">
+      {% for r in records %}<li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+        <span>{{ r.member }}</span>
+        <span class="text-muted small text-nowrap">{{ r.timestamp|time:"g:i A" }} · {{ r.get_method_display }}
+          {% if perms.attendance.add_attendancerecord %}<a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'attendance:remove_record' r.pk %}">Remove</a>{% endif %}</span>
+      </li>
+      {% empty %}<li class="list-group-item text-muted">No one has checked in yet.</li>{% endfor %}
+    </ul>
+    </div></div>
+    <div class="card"><div class="card-body">
+    <h2 class="h5">Not checked in ({{ absent|length }})</h2>
+    <p class="small text-muted mb-2">Active members who had joined by this meeting's date.</p>
+    <ul class="list-group list-group-flush">
+      {% for m in absent %}<li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+        <span>{{ m }}</span>
+        {% if perms.attendance.add_attendancerecord %}
+        <form method="post" action="{% url 'attendance:manual' meeting.pk %}">{% csrf_token %}
+          <input type="hidden" name="member" value="{{ m.pk }}"><button class="btn btn-sm btn-outline-primary">Mark present</button>
+        </form>{% endif %}
+      </li>
+      {% empty %}<li class="list-group-item text-muted">Everyone is checked in.</li>{% endfor %}
+    </ul>
+    </div></div>
+    {% if perms.members.view_changelog and history %}
+    <h2 class="h6 mt-3">Attendance changes</h2>
+    <ul class="list-group small">
+      {% for c in history %}<li class="list-group-item">{{ c.change_date|date:"d/m/Y g:i A" }} · <strong>{{ c.changed_by_display }}</strong> · {% if c.action == 'Remove' %}removed check-in: {{ c.old_value }}{% else %}{{ c.new_value }}{% endif %}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</div>
+<a class="d-inline-block mt-3" href="{% url 'attendance:meetings' %}">← All meetings</a>
+{% endblock %}

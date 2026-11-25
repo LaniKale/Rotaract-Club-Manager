@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Meetings{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Meetings</h1>
+  {% if perms.attendance.add_meeting %}<a class="btn btn-primary btn-sm" href="{% url 'attendance:meeting_add' %}">+ New meeting</a>{% endif %}
+</div>
+<div class="list-group">
+  {% for m in meetings %}
+    <a class="list-group-item list-group-item-action d-flex justify-content-between" href="{% url 'attendance:detail' m.pk %}">
+      <span><strong>{{ m.title }}</strong> · {{ m.date|date:"d/m/Y" }} · {{ m.location }}</span>
+      <span class="badge bg-secondary">{{ m.attendance_records.count }} present</span>
+    </a>
+  {% empty %}<div class="list-group-item text-muted">No meetings yet.</div>{% endfor %}
+</div>
+{% endblock %}

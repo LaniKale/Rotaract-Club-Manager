@@ -1,0 +1,9 @@
+{# Attendance rate: "Attended 4 of 6 meetings (67%)". Expects `summary` from ClubMember.attendance_summary(). #}
+{% if summary.total %}
+<p class="mb-1">Attended <strong>{{ summary.attended }} of {{ summary.total }}</strong> meeting{{ summary.total|pluralize }} held since joining (<strong>{{ summary.percent }}%</strong>)</p>
+<div class="progress mb-3" role="progressbar" aria-label="Attendance rate" aria-valuenow="{{ summary.percent }}" aria-valuemin="0" aria-valuemax="100" style="height: .6rem">
+  <div class="progress-bar {% if summary.percent >= 75 %}bg-success{% elif summary.percent >= 50 %}bg-warning{% else %}bg-danger{% endif %}" style="width: {{ summary.percent }}%"></div>
+</div>
+{% else %}
+<p class="text-muted mb-3">No meetings have been held since joining.</p>
+{% endif %}
